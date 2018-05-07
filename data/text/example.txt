@@ -1,0 +1,18 @@
+first_img.jpg
+test_dir
+640 480 3
+0
+Some car
+261 138 284 140 279 158 260 158
+1
+Harbour Front
+288 138 417 140 416 161 290 157
+second_img.jpg
+training_dir
+640 480 3
+0
+Bird
+261 138 284 140 279 158 260 158
+1
+Lighthouse
+288 138 417 140 416 161 290 157
