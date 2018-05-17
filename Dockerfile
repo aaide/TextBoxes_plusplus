@@ -36,6 +36,10 @@ RUN git clone -b ${CLONE_TAG} --depth 1 "https://github.com/aaide/TextBoxes_plus
 # Update pip before installing stuff (apt-get pip is quite old)
 RUN sudo pip install -U pip
 
+# Resolve version conflict with six
+RUN pip install --ignore-installed six
+
+# Install requirements and build caffe
 RUN for req in $(cat python/requirements.txt); do pip install $req; done && \
     mkdir build && cd build && \
     cmake .. -DCUDA_ARCH_NAME=Manual && \
