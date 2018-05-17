@@ -19,7 +19,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libgeos-dev \
         protobuf-compiler \
         python-dev \
-        python-numpy \
         python-pip \
         python-scipy \
         python-opencv && \
