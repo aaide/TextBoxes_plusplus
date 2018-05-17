@@ -30,9 +30,6 @@ WORKDIR $CAFFE_ROOT
 # FIXME: clone a specific git tag and use ARG instead of ENV once DockerHub supports this.
 ENV CLONE_TAG=experimental
 
-# Set this with `docker build --build-arg CLONE_REPO=$(git remote get-url --all origin) .`
-# Note that will only work for https urls since ssh is not installed in the image
-
 # Clone Repo
 RUN git clone -b ${CLONE_TAG} --depth 1 "https://github.com/aaide/TextBoxes_plusplus.git" .
 
