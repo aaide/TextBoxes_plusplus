@@ -38,7 +38,7 @@ RUN sudo pip install -U pip
 
 RUN for req in $(cat python/requirements.txt); do pip install $req; done && \
     mkdir build && cd build && \
-    cmake ..  && \
+    cmake .. -DCUDA_ARCH_NAME=Manual && \
     make -j"$(nproc)"
 
 # HACK: OpenCV can be confused by (the lack of) this driver in some systems
