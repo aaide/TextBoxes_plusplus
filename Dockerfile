@@ -36,6 +36,9 @@ ENV CLONE_TAG=experimental
 # Clone Repo
 RUN git clone -b ${CLONE_TAG} --depth 1 "https://github.com/aaide/TextBoxes_plusplus.git" .
 
+# Update pip before installing stuff (apt-get pip is quite old)
+RUN sudo pip install -U pip
+
 # CUDA_ARCH_NAME=Manual is a workaround the lack of compute_60 or higher in cuda7.5's cuda
 # Required for recent GPUs
 RUN for req in $(cat python/requirements.txt); do pip install $req; done && \
