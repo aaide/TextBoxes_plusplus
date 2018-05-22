@@ -46,7 +46,7 @@ RUN sudo apt-get -y update && \
 	sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y && \
 	sudo apt-get -y update && \
 	sudo apt-get -y install gcc-5 g++-5 && \
-    sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 60 --slave /usr/bin/g++ g++ /usr/bin/g++-5
+	sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 60 --slave /usr/bin/g++ g++ /usr/bin/g++-5
 
 # Install requirements and build caffe
 RUN for req in $(cat python/requirements.txt); do pip install $req; done && \
@@ -63,3 +63,9 @@ ENV PATH $CAFFE_ROOT/build/tools:$PYCAFFE_ROOT:$PATH
 RUN echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig
 
 WORKDIR /opt/caffe
+
+#Install and run a Jupyter Notebook
+RUN pip install tornado==4.5.3 && \
+	pip install jupyter
+CMD jupyter notebook --allow-root --ip 0.0.0.0 --no-browser --port=8000
+
