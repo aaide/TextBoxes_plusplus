@@ -40,6 +40,13 @@ RUN sudo pip install -U pip
 # Resolve version conflict with six
 RUN pip install --ignore-installed six
 
+# Install GCC5 to make caffe building work
+RUN sudo apt-get -Y update && \
+	sudo apt-get -Y install software-properties-common && \
+	sudo add-apt-repository ppa:ubuntu-toolchain-r/test && \
+	sudo apt-get -Y install gcc-5 g++-5 && \
+    sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 60 --slave /usr/bin/g++ g++ /usr/bin/g++-5
+
 # Install requirements and build caffe
 RUN for req in $(cat python/requirements.txt); do pip install $req; done && \
     mkdir build && cd build && \
