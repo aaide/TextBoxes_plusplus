@@ -1,4 +1,4 @@
-FROM nvidia/cuda:7.5-cudnn5-devel-ubuntu14.04
+FROM nvidia/cuda:8.0-cudnn5-devel-ubuntu14.04
 MAINTAINER caffe-maint@googlegroups.com
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -19,9 +19,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libgeos-dev \
         protobuf-compiler \
         python-dev \
-        python-numpy \
         python-pip \
         python-scipy \
+        python-skimage \
         python-opencv && \
     rm -rf /var/lib/apt/lists/*
 
@@ -29,17 +29,26 @@ ENV CAFFE_ROOT=/opt/caffe
 WORKDIR $CAFFE_ROOT
 
 # FIXME: clone a specific git tag and use ARG instead of ENV once DockerHub supports this.
-ENV CLONE_TAG=master
+ENV CLONE_TAG=docker_update
 
-# Set this with `docker build --build-arg CLONE_REPO=$(git remote get-url --all origin) .`
-# Note that will only work for https urls since ssh is not installed in the image
+# Clone Repo
+RUN git clone -b ${CLONE_TAG} --depth 1 "https://github.com/aaide/TextBoxes_plusplus.git" .
 
-ARG CLONE_REPO
+# Update pip before installing stuff (apt-get pip is quite old)
+RUN sudo pip install -U pip
 
-RUN git clone -b ${CLONE_TAG} --depth 1 $CLONE_REPO .
+# Resolve version conflict with six
+RUN pip install --ignore-installed six
 
-# CUDA_ARCH_NAME=Manual is a workaround the lack of compute_60 or higher in cuda7.5's cuda
-# Required for recent GPUs
+# Install GCC5 to make caffe building work
+RUN sudo apt-get -y update && \
+	sudo apt-get -y install software-properties-common && \
+	sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y && \
+	sudo apt-get -y update && \
+	sudo apt-get -y install gcc-5 g++-5 && \
+	sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 60 --slave /usr/bin/g++ g++ /usr/bin/g++-5
+
+# Install requirements and build caffe
 RUN for req in $(cat python/requirements.txt); do pip install $req; done && \
     mkdir build && cd build && \
     cmake .. -DCUDA_ARCH_NAME=Manual && \
@@ -54,3 +63,11 @@ ENV PATH $CAFFE_ROOT/build/tools:$PYCAFFE_ROOT:$PATH
 RUN echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig
 
 WORKDIR /opt/caffe
+
+#Install Jupyter Notebook and Lab
+RUN pip install tornado==4.5.3 && \
+	pip install jupyter jupyterlab
+
+# Commands for running jupyter notebook or lab when container starts
+#CMD jupyter notebook --allow-root --ip 0.0.0.0 --no-browser --port=8000
+#CMD jupyter lab --allow-root --ip 0.0.0.0 --no-browser --port=8888
